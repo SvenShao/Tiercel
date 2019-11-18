@@ -30,7 +30,10 @@ public class DownloadTask: Task<DownloadTask> {
     
     private enum CodingKeys: CodingKey {
         case resumeData
+        case id
     }
+    
+    var id: String?
     
     internal var task: URLSessionDownloadTask? {
         willSet {
@@ -97,6 +100,7 @@ public class DownloadTask: Task<DownloadTask> {
                    headers: headers,
                    cache: cache,
                    operationQueue: operationQueue)
+        id = url.absoluteString
         if let fileName = fileName,
             !fileName.isEmpty {
             self.fileName = fileName
@@ -112,6 +116,7 @@ public class DownloadTask: Task<DownloadTask> {
         let superEncoder = container.superEncoder()
         try super.encode(to: superEncoder)
         try container.encodeIfPresent(resumeData, forKey: .resumeData)
+        try container.encodeIfPresent(id, forKey: .id)
     }
     
     public required init(from decoder: Decoder) throws {
@@ -119,6 +124,7 @@ public class DownloadTask: Task<DownloadTask> {
         let superDecoder = try container.superDecoder()
         try super.init(from: superDecoder)
         resumeData = try container.decodeIfPresent(Data.self, forKey: .resumeData)
+        id = try container.decodeIfPresent(String.self, forKey: .id)
         guard let resumeData = resumeData else { return }
         tmpFileName = ResumeDataHelper.getTmpFileName(resumeData)
     }
@@ -302,6 +308,7 @@ extension DownloadTask {
             guard let request = request else { return  }
             task = session?.downloadTask(with: request)
         }
+        task?.taskDescription = id ?? url.absoluteString
         speed = 0
         progress.setUserInfoObject(progress.completedUnitCount, forKey: .fileCompletedCountKey)
         

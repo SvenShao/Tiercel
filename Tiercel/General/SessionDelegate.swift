@@ -44,29 +44,18 @@ extension SessionDelegate: URLSessionDownloadDelegate {
     
     
     public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        guard let manager = manager,
-            let currentURL = downloadTask.currentRequest?.url,
-            let task = manager.fetchTask(currentURL: currentURL)
-            else { return }
+        guard let manager = manager, let task = manager.fetchTask(downloadTask)  else { return }
         task.didWriteData(bytesWritten: bytesWritten, totalBytesWritten: totalBytesWritten, totalBytesExpectedToWrite: totalBytesExpectedToWrite)
     }
     
     
     public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        guard let manager = manager,
-            let currentURL = downloadTask.currentRequest?.url,
-            let task = manager.fetchTask(currentURL: currentURL)
-            else { return }
+        guard let manager = manager, let task = manager.fetchTask(downloadTask) else { return }
         task.didFinishDownloadingTo(location: location)
     }
     
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        guard let manager = manager,
-            let currentURL = task.currentRequest?.url,
-            let downloadTask = manager.fetchTask(currentURL: currentURL)
-            else { return }
+        guard let manager = manager, let dTask = task as? URLSessionDownloadTask, let downloadTask = manager.fetchTask(dTask) else { return }
         downloadTask.didComplete(task: task, error: error)
     }
-    
-    
 }

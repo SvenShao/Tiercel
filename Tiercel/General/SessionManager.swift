@@ -308,13 +308,18 @@ extension SessionManager {
     /// - Returns: 如果url有效，则返回对应的task；如果url无效，则返回nil
     @discardableResult
     public func download(_ url: URLConvertible,
+                         id: String? = nil,
                          headers: [String: String]? = nil,
                          fileName: String? = nil) -> DownloadTask? {
         do {
             let validURL = try url.asURL()
             var task: DownloadTask?
             operationQueue.sync {
-                task = fetchTask(validURL)
+                if let id = id {
+                    task = fetchTask(id)
+                }else {
+                    task = fetchTask(validURL)
+                }
                 if let task = task {
                     task.headers = headers
                     if let fileName = fileName {
@@ -326,6 +331,9 @@ extension SessionManager {
                                         fileName: fileName,
                                         cache: cache,
                                         operationQueue: operationQueue)
+                    if let id = id {
+                        task?.id = id
+                    }
                     task?.manager = self
                     task?.session = session
                     tasks.append(task!)
@@ -402,6 +410,18 @@ extension SessionManager {
         }
     }
     
+    public func fetchTask(_ id: String) -> DownloadTask? {
+        return tasks.first { $0.id == id }
+    }
+    
+    public func fetchTask(_ task: URLSessionDownloadTask) -> DownloadTask? {
+        if let description = task.taskDescription {
+            return fetchTask(description)
+        }else if let currentURL = task.currentRequest?.url {
+            return fetchTask(currentURL: currentURL)
+        }
+        return nil
+    }
     
     /// 开启任务
     /// 会检查存放下载完成的文件中是否存在跟fileName一样的文件

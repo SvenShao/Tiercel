@@ -56,7 +56,8 @@ class ViewController1: UIViewController {
     }
     
     @IBAction func start(_ sender: UIButton) {
-        sessionManager.download(URLString)?.progress { [weak self] (task) in
+        
+        sessionManager.download(URLString, id: "testId", headers: nil, fileName: nil)?.progress { [weak self] (task) in
             self?.updateUI(task)
         }.success { [weak self] (task) in
             self?.updateUI(task)
