@@ -316,7 +316,7 @@ extension SessionManager {
             var task: DownloadTask?
             operationQueue.sync {
                 if let id = id {
-                    task = fetchTask(id)
+                    task = fetchTask(id: id)
                 }else {
                     task = fetchTask(validURL)
                 }
@@ -478,7 +478,7 @@ extension SessionManager {
     
     public func suspend(id: String, onMainQueue: Bool = true, _ handler: Handler<DownloadTask>? = nil) {
         operationQueue.async {
-            guard let task = self.fetchTask(id) else { return }
+            guard let task = self.fetchTask(id: id) else { return }
             task.suspend(onMainQueue: onMainQueue, handler)
         }
     }
@@ -497,7 +497,7 @@ extension SessionManager {
     
     public func cancel(id: String, onMainQueue: Bool = true, _ handler: Handler<DownloadTask>? = nil) {
         operationQueue.async {
-            guard let task = self.fetchTask(id) else { return }
+            guard let task = self.fetchTask(id: id) else { return }
             task.cancel(onMainQueue: onMainQueue, handler)
         }
     }
@@ -521,7 +521,7 @@ extension SessionManager {
     
     public func remove(id: String, completely: Bool = false, onMainQueue: Bool = true, _ handler: Handler<DownloadTask>? = nil) {
         operationQueue.async {
-            guard let task = self.fetchTask(id) else { return }
+            guard let task = self.fetchTask(id: id) else { return }
             task.remove(completely: completely, onMainQueue: onMainQueue, handler)
         }
     }
