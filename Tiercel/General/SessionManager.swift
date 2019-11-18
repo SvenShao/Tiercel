@@ -462,6 +462,13 @@ extension SessionManager {
         }
     }
     
+    public func suspend(_ id: String, onMainQueue: Bool = true, _ handler: Handler<DownloadTask>? = nil) {
+        operationQueue.async {
+            guard let task = self.fetchTask(id) else { return }
+            task.suspend(onMainQueue: onMainQueue, handler)
+        }
+    }
+    
     /// 取消任务
     /// 不会对已经完成的任务造成影响
     /// 其他状态的任务都可以被取消，被取消的任务会被移除
@@ -470,6 +477,13 @@ extension SessionManager {
     public func cancel(_ url: URLConvertible, onMainQueue: Bool = true, _ handler: Handler<DownloadTask>? = nil) {
         operationQueue.async {
             guard let task = self.fetchTask(url) else { return }
+            task.cancel(onMainQueue: onMainQueue, handler)
+        }
+    }
+    
+    public func cancel(_ id: String, onMainQueue: Bool = true, _ handler: Handler<DownloadTask>? = nil) {
+        operationQueue.async {
+            guard let task = self.fetchTask(id) else { return }
             task.cancel(onMainQueue: onMainQueue, handler)
         }
     }
@@ -487,6 +501,13 @@ extension SessionManager {
     public func remove(_ url: URLConvertible, completely: Bool = false, onMainQueue: Bool = true, _ handler: Handler<DownloadTask>? = nil) {
         operationQueue.async {
             guard let task = self.fetchTask(url) else { return }
+            task.remove(completely: completely, onMainQueue: onMainQueue, handler)
+        }
+    }
+    
+    public func remove(_ id: String, completely: Bool = false, onMainQueue: Bool = true, _ handler: Handler<DownloadTask>? = nil) {
+        operationQueue.async {
+            guard let task = self.fetchTask(id) else { return }
             task.remove(completely: completely, onMainQueue: onMainQueue, handler)
         }
     }
