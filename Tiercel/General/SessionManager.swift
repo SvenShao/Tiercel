@@ -410,13 +410,13 @@ extension SessionManager {
         }
     }
     
-    public func fetchTask(_ id: String) -> DownloadTask? {
+    public func fetchTask(id: String) -> DownloadTask? {
         return tasks.first { $0.id == id }
     }
     
     public func fetchTask(_ task: URLSessionDownloadTask) -> DownloadTask? {
         if let description = task.taskDescription {
-            return fetchTask(description)
+            return fetchTask(id: description)
         }else if let currentURL = task.currentRequest?.url {
             return fetchTask(currentURL: currentURL)
         }
@@ -429,6 +429,20 @@ extension SessionManager {
     public func start(_ url: URLConvertible) {
         operationQueue.async {
             guard let task = self.fetchTask(url) else { return }
+            if !self.shouldCreatSession {
+                task.start()
+            } else {
+                task.status = .suspended
+                if !self.waitingTasks.contains(task) {
+                    self.waitingTasks.append(task)
+                }
+            }
+        }
+    }
+    
+    public func start(_ id: String) {
+        operationQueue.async {
+            guard let task = self.fetchTask(id: id) else { return }
             if !self.shouldCreatSession {
                 task.start()
             } else {
@@ -462,7 +476,7 @@ extension SessionManager {
         }
     }
     
-    public func suspend(_ id: String, onMainQueue: Bool = true, _ handler: Handler<DownloadTask>? = nil) {
+    public func suspend(id: String, onMainQueue: Bool = true, _ handler: Handler<DownloadTask>? = nil) {
         operationQueue.async {
             guard let task = self.fetchTask(id) else { return }
             task.suspend(onMainQueue: onMainQueue, handler)
@@ -481,7 +495,7 @@ extension SessionManager {
         }
     }
     
-    public func cancel(_ id: String, onMainQueue: Bool = true, _ handler: Handler<DownloadTask>? = nil) {
+    public func cancel(id: String, onMainQueue: Bool = true, _ handler: Handler<DownloadTask>? = nil) {
         operationQueue.async {
             guard let task = self.fetchTask(id) else { return }
             task.cancel(onMainQueue: onMainQueue, handler)
@@ -505,7 +519,7 @@ extension SessionManager {
         }
     }
     
-    public func remove(_ id: String, completely: Bool = false, onMainQueue: Bool = true, _ handler: Handler<DownloadTask>? = nil) {
+    public func remove(id: String, completely: Bool = false, onMainQueue: Bool = true, _ handler: Handler<DownloadTask>? = nil) {
         operationQueue.async {
             guard let task = self.fetchTask(id) else { return }
             task.remove(completely: completely, onMainQueue: onMainQueue, handler)
