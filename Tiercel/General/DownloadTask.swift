@@ -437,9 +437,11 @@ extension DownloadTask {
             }
         }
 
-        progress.totalUnitCount = task.countOfBytesExpectedToReceive
-        progress.completedUnitCount = task.countOfBytesReceived
-        progress.setUserInfoObject(task.countOfBytesReceived, forKey: .fileCompletedCountKey)
+        if task.countOfBytesExpectedToReceive > 0 {
+             progress.totalUnitCount = task.countOfBytesExpectedToReceive
+             progress.completedUnitCount = task.countOfBytesReceived
+             progress.setUserInfoObject(task.countOfBytesReceived, forKey: .fileCompletedCountKey)
+        }
 
         if let error = error {
             self.error = error
