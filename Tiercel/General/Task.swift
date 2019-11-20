@@ -103,12 +103,12 @@ public class Task<T>: NSObject, NSCoding, Codable {
         set {
             dataQueue.sync {
                 _status = newValue
-                didChangeStatus?(_status)
+                didChangeStatus?(self)
             }
         }
     }
     
-    public var didChangeStatus: ((Status) -> Void)?
+    public var didChangeStatus: ((Task) -> Void)?
     
     private var _validation: Validation = .unkown
     public var validation: Validation {
