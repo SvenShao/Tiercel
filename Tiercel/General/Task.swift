@@ -108,7 +108,7 @@ public class Task<T>: NSObject, NSCoding, Codable {
         }
     }
     
-    var didChangeStatus: ((Status) -> Void)?
+    public var didChangeStatus: ((Status) -> Void)?
     
     private var _validation: Validation = .unkown
     public var validation: Validation {
