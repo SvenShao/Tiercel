@@ -65,6 +65,6 @@ extension SessionDelegate: URLSessionDownloadDelegate {
         if let err = error {
             info["error"] = err
         }
-        NotificationCenter.default.post(name: .TiercelDownloadTaskDidComplete, object: task, userInfo: info)
+        NotificationCenter.default.post(name: .TiercelDownloadTaskDidComplete, object: downloadTask, userInfo: info)
     }
 }
