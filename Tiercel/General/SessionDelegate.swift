@@ -26,6 +26,10 @@
 
 import UIKit
 
+public extension Notification.Name {
+    static let TiercelDownloadTaskDidComplete = Notification.Name("TiercelDownloadTaskDidComplete")
+}
+
 internal class SessionDelegate: NSObject {
     internal weak var manager: SessionManager?
 
@@ -57,5 +61,10 @@ extension SessionDelegate: URLSessionDownloadDelegate {
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         guard let manager = manager, let dTask = task as? URLSessionDownloadTask, let downloadTask = manager.fetchTask(dTask) else { return }
         downloadTask.didComplete(task: task, error: error)
+        var info: [String: Any] = [:]
+        if let err = error {
+            info["error"] = err
+        }
+        NotificationCenter.default.post(name: .TiercelDownloadTaskDidComplete, object: task, userInfo: info)
     }
 }
