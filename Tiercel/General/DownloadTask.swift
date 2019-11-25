@@ -33,7 +33,7 @@ public class DownloadTask: Task<DownloadTask> {
         case id
     }
     
-    var id: String?
+    public internal(set) var id: String?
     
     internal var task: URLSessionDownloadTask? {
         willSet {
